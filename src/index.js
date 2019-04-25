@@ -2,6 +2,8 @@ import "babel-polyfill";
 import Chart from "chart.js";
 
 const currencyURL = "www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
+
+
 // const meteoURL = "/xml.meteoservice.ru/export/gismeteo/point/140.xml";
 
 async function loadCurrency() {
@@ -11,13 +13,25 @@ async function loadCurrency() {
   const currencyData = parser.parseFromString(xmlTest, "text/xml");
   // <Cube currency="USD" rate="1.1321" />
   const rates = currencyData.querySelectorAll("Cube[currency][rate]");
-  const result = Object.create(null);
+  
+   const result = Object.create(null);
   for (let i = 0; i < rates.length; i++) {
     const rateTag = rates.item(i);
+	//document.write(rateTag[rate]);
     const rate = rateTag.getAttribute("rate");
     const currency = rateTag.getAttribute("currency");
     result[currency] = rate;
+
   }
+  
+  
+//const time = currencyData.querySelectorAll("Cube[time]");
+  
+  //	const time1 = rateTag.getAttribute("time");
+  
+  
+  
+  
   result["EUR"] = 1;
   // result["RANDOM"] = 1 + Math.random();
   return result;
@@ -50,8 +64,8 @@ buttonBuild.addEventListener("click", async function() {
       datasets: [
         {
           label: "Стоимость валюты в рублях",
-          backgroundColor: "rgb(255, 20, 20)",
-          borderColor: "rgb(180, 0, 0)",
+          backgroundColor: "rgb(255, 200, 20)",
+          borderColor: "rgb(0, 0, 0)",
           data: plotData
         }
       ]
