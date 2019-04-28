@@ -2,76 +2,108 @@ import "babel-polyfill";
 import Chart from "chart.js";
 
 const currencyURL = "www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
-
-
-// const meteoURL = "/xml.meteoservice.ru/export/gismeteo/point/140.xml";
-
-async function loadCurrency() {
-  const response = await fetch(currencyURL);
-  const xmlTest = await response.text();
-  const parser = new DOMParser();
-  const currencyData = parser.parseFromString(xmlTest, "text/xml");
-  // <Cube currency="USD" rate="1.1321" />
-  const rates = currencyData.querySelectorAll("Cube[currency][rate]");
-  
-   const result = Object.create(null);
-  for (let i = 0; i < rates.length; i++) {
-    const rateTag = rates.item(i);
-	//document.write(rateTag[rate]);
-    const rate = rateTag.getAttribute("rate");
-    const currency = rateTag.getAttribute("currency");
-    result[currency] = rate;
-
-  }
-  
-  
-//const time = currencyData.querySelectorAll("Cube[time]");
-  
-  //	const time1 = rateTag.getAttribute("time");
-  
-  
-  
-  
-  result["EUR"] = 1;
-  // result["RANDOM"] = 1 + Math.random();
-  return result;
+const meteoURL = "/xml.meteoservice.ru/export/gismeteo/point/140.xml";
+ 
+ //Temperatura
+ async function loadWeather() {
+  const responseWe = await fetch(meteoURL);//отправили запрос
+  const xmlWe = await responseWe.text();//promise
+  const parserWe = new DOMParser();//object domparser
+  const WeatherData = parserWe.parseFromString(xmlWe, "text/xml");//return xml-doc
+   // <TEMPERATURE max="6" min="2"/>
+    
+	const tempr = WeatherData.querySelectorAll("TEMPERATURE[max][min]");
+	 
+	const resultTempr = Object.create(null);
+		
+  for (let i = 0; i < tempr.length; i++) {
+	const temprTag = tempr[i];
+	
+	let max = temprTag.getAttribute("max"); let min = temprTag.getAttribute("min");
+	const averTemp=(Number(max)+Number(min))/2;
+	
+	resultTempr[i] = averTemp;
+	console.log(resultTempr[i]);
+	}
+  return  resultTempr;
 }
-
-function normalizeDataByCurrency(data, currency) {
-  const result = Object.create(null);
-  const value = data[currency];
-  for (const key of Object.keys(data)) {
-    result[key] = value / data[key];
-  }
-  return result;
+ 
+ //Heat
+ async function loadWeather1() {
+  const responseWe = await fetch(meteoURL);//отправили запрос
+  const xmlWe = await responseWe.text();//promise
+  const parserWe = new DOMParser();//object domparser
+  const WeatherData = parserWe.parseFromString(xmlWe, "text/xml");//return xml-doc
+   // <TEMPERATURE max="6" min="2"/>
+    
+	const heat=WeatherData.querySelectorAll("HEAT[max][min]");
+    
+		const resultHeat = Object.create(null);
+		
+  for (let i = 0; i < heat.length; i++) {
+	
+	const heatTag = heat[i];
+	
+	let max = heatTag.getAttribute("max");  let min = heatTag.getAttribute("min");
+	const averHeat=(Number(max)+Number(min))/2;
+	 
+	resultHeat[i] = averHeat;
+	
+	}
+  return  resultHeat;
 }
-
-const buttonBuild = document.getElementById("btn");
+ 
+  
+ const buttonBuild = document.getElementById("btn");
 const canvasCtx = document.getElementById("out").getContext("2d");
-buttonBuild.addEventListener("click", async function() {
-  const currencyData = await loadCurrency();
-  const normalData = normalizeDataByCurrency(currencyData, "RUB");
-  const keys = Object.keys(normalData).sort((k1, k2) =>
-    compare(normalData[k1], normalData[k2])
-  );
-  const plotData = keys.map(key => normalData[key]);
 
+
+buttonBuild.addEventListener("click", async function() {
+   
+   const WeatherData = await loadWeather();
+   
+    const WeatherData1 = await loadWeather1();
+ 
+ //const currencyData = await loadCurrency();
+ 
+ //const normalData = normalizeDataByCurrency(WeatherData, "RUB");
+ //const keys = Object.keys(normalData).sort((k1, k2) =>  compare(normalData[k1], normalData[k2]));
+ 
+ const keys = Object.keys(WeatherData);
+ const plotData = keys.map(key => WeatherData[key]);
+  
+  
+  const keys1 = Object.keys(WeatherData1);
+  const plotData1 = keys.map(key => WeatherData1[key]);
+  
+  
   const chartConfig = {
     type: "line",
 
     data: {
-      labels: keys,
+      labels: ["21","03","09","15"],
       datasets: [
         {
-          label: "Стоимость валюты в рублях",
-          backgroundColor: "rgb(255, 200, 20)",
+          label: "Температура",
+          backgroundColor: "rgb(255, 00, 20)",
           borderColor: "rgb(0, 0, 0)",
-          data: plotData
-        }
+          data: plotData,
+		   
+        },
+		{
+          label: "Температура по ощущениям",
+          backgroundColor: "rgb(055, 200, 20)",
+          borderColor: "rgb(0, 0, 0)",
+          data: plotData1,
+		}
+			
       ]
+	  
     }
+	
   };
 
+  
   if (window.chart) {
     chart.data.labels = chartConfig.data.labels;
     chart.data.datasets[0].data = chartConfig.data.datasets[0].data;
