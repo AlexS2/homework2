@@ -1,7 +1,6 @@
 import "babel-polyfill";
 import Chart from "chart.js";
 
-const currencyURL = "www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml";
 const meteoURL = "/xml.meteoservice.ru/export/gismeteo/point/140.xml";
  
  //Temperatura
@@ -37,13 +36,10 @@ const meteoURL = "/xml.meteoservice.ru/export/gismeteo/point/140.xml";
    // <TEMPERATURE max="6" min="2"/>
     
 	const heat=WeatherData.querySelectorAll("HEAT[max][min]");
-    
-		const resultHeat = Object.create(null);
+    const resultHeat = Object.create(null);
 		
   for (let i = 0; i < heat.length; i++) {
-	
 	const heatTag = heat[i];
-	
 	let max = heatTag.getAttribute("max");  let min = heatTag.getAttribute("min");
 	const averHeat=(Number(max)+Number(min))/2;
 	 
@@ -52,23 +48,16 @@ const meteoURL = "/xml.meteoservice.ru/export/gismeteo/point/140.xml";
 	}
   return  resultHeat;
 }
- 
-  
- const buttonBuild = document.getElementById("btn");
+   
+const buttonBuild = document.getElementById("btn");
 const canvasCtx = document.getElementById("out").getContext("2d");
 
 
 buttonBuild.addEventListener("click", async function() {
    
    const WeatherData = await loadWeather();
-   
-    const WeatherData1 = await loadWeather1();
- 
- //const currencyData = await loadCurrency();
- 
- //const normalData = normalizeDataByCurrency(WeatherData, "RUB");
- //const keys = Object.keys(normalData).sort((k1, k2) =>  compare(normalData[k1], normalData[k2]));
- 
+   const WeatherData1 = await loadWeather1();
+
  const keys = Object.keys(WeatherData);
  const plotData = keys.map(key => WeatherData[key]);
   
