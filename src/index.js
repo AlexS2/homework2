@@ -12,9 +12,8 @@ const meteoURL = "/xml.meteoservice.ru/export/gismeteo/point/140.xml";
    // <TEMPERATURE max="6" min="2"/>
     
 	const tempr = WeatherData.querySelectorAll("TEMPERATURE[max][min]");
-	 
 	const resultTempr = Object.create(null);
-		
+	
   for (let i = 0; i < tempr.length; i++) {
 	const temprTag = tempr[i];
 	
@@ -105,8 +104,3 @@ buttonBuild.addEventListener("click", async function() {
   }
 });
 
-function compare(a, b) {
-  if (a > b) return 1;
-  if (a < b) return -1;
-  return 0;
-}
